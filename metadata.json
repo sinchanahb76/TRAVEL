@@ -1,0 +1,6 @@
+{
+  "name": "AI Travel Planner",
+  "description": "Personalized AI travel itinerary generator with interactive map, weather forecast, budget breakdown, and saved trips.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  header, nav, footer, button, .print\:hidden {
+    display: none !important;
+  }
+  .shadow-md, .shadow-xl, .shadow-lg, .shadow-2xl {
+    box-shadow: none !important;
+  }
+  .border {
+    border-color: #e5e7eb !important;
+  }
+  .break-inside-avoid {
+    break-inside: avoid !important;
+  }
+}
+
