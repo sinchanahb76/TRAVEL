@@ -73,9 +73,16 @@ export default function App() {
 
     // Also fetch from server API
     fetch('/api/trips')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Server returned status ${res.status}`);
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Non-JSON response received');
+        }
+        return res.json();
+      })
       .then((data) => {
-        if (data.trips && Array.isArray(data.trips) && data.trips.length > 0) {
+        if (data && data.trips && Array.isArray(data.trips) && data.trips.length > 0) {
           setSavedTrips((prev) => {
             const combined = [...data.trips, ...prev];
             const uniqueMap = new Map();
@@ -105,15 +112,28 @@ export default function App() {
         body: JSON.stringify(formData),
       });
 
+      const contentType = res.headers.get('content-type') || '';
+
       if (!res.ok) {
-        let errText = `Failed to generate itinerary (Server responded with status ${res.status})`;
-        try {
-          const errData = await res.json();
-          if (errData && errData.error) {
-            errText = errData.error;
+        let errText = `Failed to generate itinerary (Server status ${res.status})`;
+        if (contentType.includes('application/json')) {
+          try {
+            const errData = await res.json();
+            if (errData && errData.error) {
+              errText = errData.error;
+            }
+          } catch (_) {}
+        } else {
+          const rawText = await res.text();
+          if (rawText && rawText.toLowerCase().includes('404')) {
+            errText = 'API route /api/generate-itinerary not found (404). Check backend route configuration.';
           }
-        } catch (_) {}
+        }
         throw new Error(errText);
+      }
+
+      if (!contentType.includes('application/json')) {
+        throw new Error('Received unexpected non-JSON response from server.');
       }
 
       const data: ItineraryData = await res.json();
