@@ -7,7 +7,7 @@ import {
   saveTripHandler,
   deleteTripHandler,
   getWeatherHandler,
-} from "./src/server/backendLogic";
+} from "./api/_lib/backendLogic.js";
 
 const app = express();
 const PORT = 3000;

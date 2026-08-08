@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getTripsHandler, saveTripHandler, deleteTripHandler } from "../src/server/backendLogic";
+import { getTripsHandler, saveTripHandler, deleteTripHandler } from "./_lib/backendLogic.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Content-Type", "application/json");
