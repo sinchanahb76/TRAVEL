@@ -6,7 +6,7 @@ The application uses Google's Gemini AI to generate intelligent travel plans and
 
 ## 🌐 Live Demo
 
-🔗 **Live Application:** https://travel-2sk10cixh-sinchanahb76s-projects.vercel.app
+🔗 **Live Application:** https://travel-9tqo9txsk-sinchanahb76s-projects.vercel.app/
 
 ---
 
