@@ -148,3 +148,106 @@ The application follows a frontend + serverless backend architecture.
                     │    Itinerary     │
                     └──────────────────┘
 
+📂 Project Structure
+
+ai-travel-planner/
+│
+├── api/
+│   ├── _lib/
+│   │   └── backendLogic.ts
+│   │
+│   ├── generate-itinerary.ts
+│   ├── trips.ts
+│   ├── weather.ts
+│   └── health.ts
+│
+├── src/
+│   ├── components/
+│   ├── services/
+│   ├── server/
+│   ├── App.tsx
+│   └── main.tsx
+│
+├── public/
+│
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+├── vercel.json
+└── README.md
+
+🔌 API Endpoints
+
+The backend is implemented using Vercel Serverless Functions.
+
+Endpoint	Method	Purpose
+/api/generate-itinerary	POST	Generate an AI travel itinerary
+/api/trips	GET	Retrieve saved trips
+/api/trips	POST	Save a trip
+/api/trips/:id	DELETE	Delete a saved trip
+/api/weather	GET	Retrieve weather information
+/api/health	GET	Check backend health
+
+
+🔑 Environment Variables
+
+Create a .env.local file for local development.
+
+GEMINI_API_KEY=your_gemini_api_key
+MONGODB_URI=your_mongodb_connection_string
+OPENWEATHER_API_KEY=your_openweather_api_key
+
+🚀 Getting Started
+1. Clone the repository
+git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+
+2. Navigate into the project
+cd ai-travel-planner
+
+3. Install dependencies
+npm install
+
+4. Configure environment variables
+
+
+Create:
+
+.env.local
+
+and add:
+
+GEMINI_API_KEY=your_key
+MONGODB_URI=your_connection_string
+OPENWEATHER_API_KEY=your_key
+
+5. Start the development server
+npm run dev
+
+The application will be available at:
+
+http://localhost:5173
+🏗️ Production Build
+
+To create a production build:
+
+npm run build
+
+To verify TypeScript:
+
+npx tsc --noEmit
+☁️ Deployment
+
+The application is deployed on Vercel.
+
+Deployment flow
+Local Development
+       ↓
+     Git
+       ↓
+    GitHub
+       ↓
+     Vercel
+       ↓
+Production
+
+Vercel automatically builds and deploys the application whenever changes are pushed to the connected GitHub repository.
