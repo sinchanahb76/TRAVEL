@@ -1,6 +1,7 @@
 import React from 'react';
-import { Compass, Bookmark, Sun, Moon, Sparkles, MapPin, DollarSign, Download, Plus, Plane } from 'lucide-react';
+import { Compass, Bookmark, Sun, Moon, Sparkles, MapPin, DollarSign, Download, Plus, Plane, LogOut, User } from 'lucide-react';
 import { CurrencyConfig, SUPPORTED_CURRENCIES } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
   activeTab: 'home' | 'itinerary' | 'saved' | 'flights';
@@ -25,6 +26,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   hasActiveTrip,
   onPrint,
 }) => {
+  const { user, signOut } = useAuth();
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-zinc-900/80 border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-200 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -146,6 +148,32 @@ export const Navbar: React.FC<NavbarProps> = ({
             {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-zinc-700" />}
           </button>
 
+          {/* User Profile & Logout */}
+          {user && (
+            <div className="flex items-center gap-1 sm:gap-2 pl-1 border-l border-zinc-200 dark:border-zinc-800">
+              <div
+                className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/60 max-w-[150px]"
+                title={user.email || user.displayName || 'Traveler'}
+              >
+                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-xs">
+                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                  {user.displayName || user.email?.split('@')[0]}
+                </span>
+              </div>
+
+              <button
+                onClick={() => signOut()}
+                title="Log Out"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-zinc-200 dark:border-zinc-700 hover:border-rose-200 dark:hover:border-rose-800 transition-all cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            </div>
+          )}
+
           {/* Quick Create Button for Mobile */}
           <button
             onClick={() => setActiveTab('home')}
@@ -154,6 +182,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Plus className="w-4 h-4" />
           </button>
+
         </div>
       </div>
     </header>

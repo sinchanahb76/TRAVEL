@@ -15,6 +15,8 @@ import { FlightSearch } from './components/FlightSearch';
 import { MyTripsView } from './components/MyTripsView';
 import { ActivityModal } from './components/ActivityModal';
 import { Footer } from './components/Footer';
+import { AuthView } from './components/AuthView';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { generateItineraryPDF } from './lib/pdfExport';
 import {
   ItineraryData,
@@ -27,7 +29,8 @@ import {
 } from './types';
 import { Compass, Sparkles, MapPin, Calendar, Layers, RotateCcw, AlertTriangle, X } from 'lucide-react';
 
-export default function App() {
+function MainApp() {
+  const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState<'home' | 'itinerary' | 'saved' | 'flights'>('home');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDark, setIsDark] = useState<boolean>(() => {
@@ -104,6 +107,26 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('saved_trips', JSON.stringify(savedTrips));
   }, [savedTrips]);
+
+  // If initial auth check is in flight, show sleek loading splash
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center gap-4 text-zinc-900 dark:text-zinc-100">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center text-white shadow-xl shadow-emerald-500/20 animate-pulse">
+          <Compass className="w-6 h-6 animate-spin" />
+        </div>
+        <div className="text-center">
+          <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200">AI Travel Planner</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Authenticating session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, require Sign In / Sign Up
+  if (!user) {
+    return <AuthView isDark={isDark} setIsDark={setIsDark} />;
+  }
 
   // Handle Generating Trip
   const handleGenerateTrip = async (formData: TripSearchForm) => {
@@ -438,5 +461,13 @@ export default function App() {
       {/* Footer */}
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }

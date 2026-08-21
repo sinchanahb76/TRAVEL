@@ -7,22 +7,39 @@ let savedTripsStore: any[] = [];
 // MongoDB Connection Caching for Vercel Serverless environment
 let cachedClient: MongoClient | null = null;
 let cachedDb: Db | null = null;
+let isMongoDisabledDueToError = false;
 
 async function getMongoDb(): Promise<Db | null> {
   const uri = process.env.MONGODB_URI;
-  if (!uri || uri.trim() === "") return null;
+  if (!uri || uri.trim() === "" || isMongoDisabledDueToError) return null;
 
-  if (cachedDb) return cachedDb;
+  if (cachedDb && cachedClient) {
+    return cachedDb;
+  }
 
   try {
     if (!cachedClient) {
-      cachedClient = new MongoClient(uri);
+      cachedClient = new MongoClient(uri, {
+        serverSelectionTimeoutMS: 4000,
+        connectTimeoutMS: 5000,
+        socketTimeoutMS: 8000,
+        maxPoolSize: 10,
+        tls: uri.includes("+srv://") || uri.includes("ssl=true") || uri.includes("tls=true"),
+      });
       await cachedClient.connect();
     }
     cachedDb = cachedClient.db("travel_app");
     return cachedDb;
-  } catch (err) {
-    console.error("Failed to connect to MongoDB, falling back to memory store:", err);
+  } catch (err: any) {
+    console.warn("MongoDB connection unavailable, gracefully using in-memory store.");
+    if (cachedClient) {
+      try {
+        await cachedClient.close();
+      } catch {}
+      cachedClient = null;
+    }
+    cachedDb = null;
+    isMongoDisabledDueToError = true;
     return null;
   }
 }
@@ -430,16 +447,18 @@ CRITICAL REQUIREMENTS:
 
 // Get Saved Trips Handler
 export async function getTripsHandler() {
-  const db = await getMongoDb();
-  if (db) {
-    try {
+  try {
+    const db = await getMongoDb();
+    if (db) {
       const trips = await db.collection("trips").find({}).sort({ createdAt: -1 }).toArray();
       // Remove mongo _id for clean response
       const cleanTrips = trips.map(({ _id, ...rest }) => rest);
       return { trips: cleanTrips };
-    } catch (err) {
-      console.error("MongoDB getTrips error:", err);
     }
+  } catch (err) {
+    console.warn("MongoDB getTrips notice, falling back to memory store.");
+    cachedDb = null;
+    cachedClient = null;
   }
   return { trips: savedTripsStore };
 }
@@ -451,13 +470,15 @@ export async function saveTripHandler(tripInput: any) {
     throw new Error("Invalid trip payload");
   }
 
-  const db = await getMongoDb();
-  if (db) {
-    try {
+  try {
+    const db = await getMongoDb();
+    if (db) {
       await db.collection("trips").updateOne({ id: trip.id }, { $set: trip }, { upsert: true });
-    } catch (err) {
-      console.error("MongoDB saveTrip error:", err);
     }
+  } catch (err) {
+    console.warn("MongoDB saveTrip notice, stored in memory store.");
+    cachedDb = null;
+    cachedClient = null;
   }
 
   // Update in-memory fallback store as well
@@ -473,13 +494,15 @@ export async function saveTripHandler(tripInput: any) {
 
 // Delete Trip Handler
 export async function deleteTripHandler(id: string) {
-  const db = await getMongoDb();
-  if (db) {
-    try {
+  try {
+    const db = await getMongoDb();
+    if (db) {
       await db.collection("trips").deleteOne({ id });
-    } catch (err) {
-      console.error("MongoDB deleteTrip error:", err);
     }
+  } catch (err) {
+    console.warn("MongoDB deleteTrip notice, removed from memory store.");
+    cachedDb = null;
+    cachedClient = null;
   }
 
   savedTripsStore = savedTripsStore.filter((t) => t.id !== id);
