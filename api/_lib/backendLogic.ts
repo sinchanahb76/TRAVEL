@@ -512,3 +512,7 @@ export async function getWeatherHandler(destination: string) {
     destination: destination || "Selected City",
   };
 }
+
+// Re-export Flight and Transport AI Services
+export { searchFlights } from "./flightService.js";
+export { parseNaturalLanguageTransportQuery, getTransportRecommendations } from "./transportAiService.js";

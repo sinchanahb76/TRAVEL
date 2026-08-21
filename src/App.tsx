@@ -10,6 +10,8 @@ import { MapWidget } from './components/MapWidget';
 import { HotelsGrid } from './components/HotelsGrid';
 import { FoodGrid } from './components/FoodGrid';
 import { HiddenGemsGrid } from './components/HiddenGemsGrid';
+import { TransportationWidget } from './components/TransportationWidget';
+import { FlightSearch } from './components/FlightSearch';
 import { MyTripsView } from './components/MyTripsView';
 import { ActivityModal } from './components/ActivityModal';
 import { Footer } from './components/Footer';
@@ -21,11 +23,12 @@ import {
   SUPPORTED_CURRENCIES,
   Activity,
   ActivityTimeSlot,
+  FlightSearchQuery,
 } from './types';
 import { Compass, Sparkles, MapPin, Calendar, Layers, RotateCcw, AlertTriangle, X } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'home' | 'itinerary' | 'saved'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'itinerary' | 'saved' | 'flights'>('home');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDark, setIsDark] = useState<boolean>(() => {
     return (
@@ -38,6 +41,9 @@ export default function App() {
   const [loadingDestination, setLoadingDestination] = useState('');
   const [activeItinerary, setActiveItinerary] = useState<ItineraryData | null>(null);
   const [savedTrips, setSavedTrips] = useState<ItineraryData[]>([]);
+
+  // Flight search query state for pre-filling from itinerary
+  const [flightQuery, setFlightQuery] = useState<Partial<FlightSearchQuery>>({});
 
   // Activity Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -148,6 +154,20 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Switch to Flight Search with pre-filled destination
+  const handleSearchFlightsForDestination = (dest: string, startDate?: string, endDate?: string) => {
+    setFlightQuery({
+      destination: dest,
+      origin: 'New Delhi',
+      departureDate: startDate || new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+      returnDate: endDate,
+      tripType: endDate ? 'round-trip' : 'one-way',
+      passengers: activeItinerary?.groupSize || 1,
+    });
+    setActiveTab('flights');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Toggle Save Current Trip
@@ -310,6 +330,8 @@ export default function App() {
           <LoadingScreen destination={loadingDestination} />
         ) : activeTab === 'home' ? (
           <HeroForm onSubmit={handleGenerateTrip} isLoading={isLoading} />
+        ) : activeTab === 'flights' ? (
+          <FlightSearch currency={currency} initialQuery={flightQuery} />
         ) : activeTab === 'saved' ? (
           <MyTripsView
             savedTrips={savedTrips}
@@ -332,6 +354,13 @@ export default function App() {
               onRegenerate={() => setActiveTab('home')}
               onPrint={handleExportPDF}
               currency={currency}
+            />
+
+            {/* AI Transport & Logistics Booking Widget */}
+            <TransportationWidget
+              itinerary={activeItinerary}
+              currency={currency}
+              onSearchFlights={handleSearchFlightsForDestination}
             />
 
             {/* Weather Forecast Widget */}

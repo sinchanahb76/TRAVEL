@@ -140,3 +140,46 @@ export const SUPPORTED_CURRENCIES: CurrencyConfig[] = [
   { code: 'CAD', symbol: 'C$', rateToUSD: 1.36, label: 'CAD (C$)' },
   { code: 'INR', symbol: '₹', rateToUSD: 83.5, label: 'INR (₹)' },
 ];
+
+export type TripType = 'one-way' | 'round-trip';
+export type CabinClass = 'ECONOMY' | 'PREMIUM_ECONOMY' | 'BUSINESS' | 'FIRST';
+
+export interface FlightSearchQuery {
+  origin: string;
+  destination: string;
+  departureDate: string;
+  returnDate?: string;
+  tripType: TripType;
+  passengers: number;
+  cabinClass: CabinClass;
+  directOnly?: boolean;
+}
+
+export interface FlightOffer {
+  id: string;
+  airline: string;
+  airlineCode: string;
+  flightNumber: string;
+  originAirport: string;
+  originCity: string;
+  destinationAirport: string;
+  destinationCity: string;
+  departureTime: string;
+  arrivalTime: string;
+  duration: string;
+  stops: number;
+  stopDetails?: string[];
+  price: number;
+  currency: string;
+  cabinClass: string;
+  aircraft?: string;
+  seatsRemaining?: number;
+  baggage?: {
+    carryOn: string;
+    checked: string;
+  };
+  bookingUrl: string;
+  provider: string;
+  isLive: boolean;
+}
+

@@ -7,6 +7,9 @@ import {
   saveTripHandler,
   deleteTripHandler,
   getWeatherHandler,
+  searchFlights,
+  parseNaturalLanguageTransportQuery,
+  getTransportRecommendations,
 } from "./api/_lib/backendLogic.js";
 
 const app = express();
@@ -43,7 +46,7 @@ app.get("/api/weather", async (req, res) => {
   }
 });
 
-// API Routes for Saved Trips
+// API Route: Saved Trips Handlers
 app.get("/api/trips", async (req, res) => {
   try {
     const data = await getTripsHandler();
@@ -53,6 +56,51 @@ app.get("/api/trips", async (req, res) => {
     return res.status(500).json({
       success: false,
       error: error?.message || "Failed to fetch saved trips",
+    });
+  }
+});
+
+// API Route: Real-time Flight Search
+app.post("/api/flights/search", async (req, res) => {
+  try {
+    const data = await searchFlights(req.body);
+    return res.json(data);
+  } catch (error: any) {
+    console.error("Error searching flights:", error);
+    return res.status(500).json({
+      success: false,
+      error: error?.message || "Failed to search flights",
+    });
+  }
+});
+
+// API Route: Natural Language Transport Parsing with Gemini
+app.post("/api/transport/ai-parse", async (req, res) => {
+  try {
+    const { prompt } = req.body || {};
+    const data = await parseNaturalLanguageTransportQuery(prompt || "");
+    return res.json({ success: true, ...data });
+  } catch (error: any) {
+    console.error("Error parsing transport prompt:", error);
+    return res.status(500).json({
+      success: false,
+      error: error?.message || "Failed to parse transport prompt",
+    });
+  }
+});
+
+// API Route: Transport Recommendations for Destinations
+app.get("/api/transport/recommend", async (req, res) => {
+  try {
+    const destination = (req.query.destination as string) || "";
+    const origin = (req.query.origin as string) || "";
+    const data = await getTransportRecommendations(destination, origin);
+    return res.json({ success: true, ...data });
+  } catch (error: any) {
+    console.error("Error fetching transport recommendations:", error);
+    return res.status(500).json({
+      success: false,
+      error: error?.message || "Failed to fetch transport recommendations",
     });
   }
 });

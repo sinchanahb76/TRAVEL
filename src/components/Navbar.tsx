@@ -1,10 +1,10 @@
 import React from 'react';
-import { Compass, Bookmark, Sun, Moon, Sparkles, MapPin, DollarSign, Download, Plus } from 'lucide-react';
+import { Compass, Bookmark, Sun, Moon, Sparkles, MapPin, DollarSign, Download, Plus, Plane } from 'lucide-react';
 import { CurrencyConfig, SUPPORTED_CURRENCIES } from '../types';
 
 interface NavbarProps {
-  activeTab: 'home' | 'itinerary' | 'saved';
-  setActiveTab: (tab: 'home' | 'itinerary' | 'saved') => void;
+  activeTab: 'home' | 'itinerary' | 'saved' | 'flights';
+  setActiveTab: (tab: 'home' | 'itinerary' | 'saved' | 'flights') => void;
   savedCount: number;
   isDark: boolean;
   setIsDark: (dark: boolean | ((prev: boolean) => boolean)) => void;
@@ -41,7 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               AI Travel Planner
             </span>
             <span className="block text-[10px] uppercase tracking-wider font-semibold text-emerald-600 dark:text-emerald-400">
-              Smart Itineraries
+              Smart Itineraries & Booking
             </span>
           </div>
         </button>
@@ -58,6 +58,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Sparkles className="w-4 h-4 text-emerald-500" />
             Plan Trip
+          </button>
+
+          <button
+            onClick={() => setActiveTab('flights')}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              activeTab === 'flights'
+                ? 'bg-white dark:bg-zinc-900 text-sky-600 dark:text-sky-400 shadow-sm'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+            }`}
+          >
+            <Plane className="w-4 h-4 text-sky-500" />
+            Flights
           </button>
 
           {hasActiveTrip && (
