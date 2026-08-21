@@ -529,20 +529,29 @@ export const FlightSearch: React.FC<FlightSearchProps> = ({ currency, initialQue
             )}
           </div>
 
-          {/* Empty / Live Unavailable State */}
+          {/* Empty State */}
           {results.length === 0 && (
             <div className="text-center py-12 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
-              <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center mb-4 border border-amber-200 dark:border-amber-800">
-                <AlertCircle className="w-7 h-7" />
+              <div className="w-14 h-14 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 mx-auto flex items-center justify-center mb-4 border border-sky-200 dark:border-sky-800">
+                <Plane className="w-7 h-7" />
               </div>
               <h3 className="text-lg font-bold text-zinc-900 dark:text-white">
-                Live booking/search is currently unavailable
+                No Direct Flights Found for Selected Date
               </h3>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-md mx-auto mt-2 leading-relaxed">
-                {serverMessage || 'Live flight search requires a valid FLIGHT_API_KEY configured in server environment variables. All other travel planner features remain fully operational.'}
+                {serverMessage ||
+                  `We couldn't find scheduled flights from ${origin} to ${destination} on ${departureDate}. Try adjusting your dates or check nearby major international hub airports.`}
               </p>
-              <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs font-mono">
-                <span>Config Key: FLIGHT_API_KEY</span>
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+                <a
+                  href={`https://www.google.com/travel/flights?q=flights+from+${encodeURIComponent(origin)}+to+${encodeURIComponent(destination)}+on+${departureDate}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-md shadow-sky-600/20 transition-all hover:scale-105"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Search on Google Flights</span>
+                </a>
               </div>
             </div>
           )}
