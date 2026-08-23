@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "AI Travel Planner",
+    "slug": "ai-travel-planner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "aitravelplanner",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#09090b"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aitravelplanner.app"
+    },
+    "android": {
+      "package": "com.aitravelplanner.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#09090b"
+      },
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ai-travel-planner-app"
+      }
+    }
+  }
+}
