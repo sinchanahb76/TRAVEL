@@ -13,36 +13,31 @@ function sanitize(val: any): string {
   return val.trim().replace(/^["']|["']$/g, '').trim();
 }
 
+function getEnvValue(expoKey: string, viteKey: string): string {
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      const val = process.env[expoKey] || process.env[viteKey];
+      if (val) return sanitize(val);
+    }
+  } catch {}
+
+  try {
+    if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+      const val = (import.meta as any).env[expoKey] || (import.meta as any).env[viteKey];
+      if (val) return sanitize(val);
+    }
+  } catch {}
+
+  return '';
+}
+
 // Support both Expo public environment variables and standard fallback keys
-const apiKey =
-  sanitize(process.env.EXPO_PUBLIC_FIREBASE_API_KEY) ||
-  sanitize(process.env.VITE_FIREBASE_API_KEY) ||
-  '';
-
-const authDomain =
-  sanitize(process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN) ||
-  sanitize(process.env.VITE_FIREBASE_AUTH_DOMAIN) ||
-  '';
-
-const projectId =
-  sanitize(process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID) ||
-  sanitize(process.env.VITE_FIREBASE_PROJECT_ID) ||
-  '';
-
-const storageBucket =
-  sanitize(process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET) ||
-  sanitize(process.env.VITE_FIREBASE_STORAGE_BUCKET) ||
-  '';
-
-const messagingSenderId =
-  sanitize(process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID) ||
-  sanitize(process.env.VITE_FIREBASE_MESSAGING_SENDER_ID) ||
-  '';
-
-const appId =
-  sanitize(process.env.EXPO_PUBLIC_FIREBASE_APP_ID) ||
-  sanitize(process.env.VITE_FIREBASE_APP_ID) ||
-  '';
+const apiKey = getEnvValue('EXPO_PUBLIC_FIREBASE_API_KEY', 'VITE_FIREBASE_API_KEY');
+const authDomain = getEnvValue('EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN', 'VITE_FIREBASE_AUTH_DOMAIN');
+const projectId = getEnvValue('EXPO_PUBLIC_FIREBASE_PROJECT_ID', 'VITE_FIREBASE_PROJECT_ID');
+const storageBucket = getEnvValue('EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET', 'VITE_FIREBASE_STORAGE_BUCKET');
+const messagingSenderId = getEnvValue('EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID', 'VITE_FIREBASE_MESSAGING_SENDER_ID');
+const appId = getEnvValue('EXPO_PUBLIC_FIREBASE_APP_ID', 'VITE_FIREBASE_APP_ID');
 
 export const firebaseConfig = {
   apiKey,

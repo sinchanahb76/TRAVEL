@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import {
   handleGenerateItinerary,
   getTripsHandler,
@@ -11,8 +12,10 @@ import {
   getTransportRecommendations,
 } from "./api/_lib/backendLogic.js";
 
+const currentDir = typeof __dirname !== "undefined" ? __dirname : process.cwd();
+
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = 3000;
 
 app.use(express.json({ limit: "10mb" }));
 
@@ -143,26 +146,64 @@ app.all("/api/*", (req, res) => {
 
 // Start Express and Vite middleware
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
+  const distCandidates = [
+    path.join(process.cwd(), "dist"),
+    currentDir,
+    path.join(currentDir, "dist"),
+  ];
+  let distPath = distCandidates[0];
+  for (const candidate of distCandidates) {
+    if (fs.existsSync(path.join(candidate, "index.html"))) {
+      distPath = candidate;
+      break;
+    }
+  }
+
+  const isProduction = process.env.NODE_ENV === "production" || fs.existsSync(path.join(distPath, "index.html"));
+
+  if (!isProduction) {
+    try {
+      const { createServer: createViteServer } = await import("vite");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+    } catch (viteError) {
+      console.warn("Vite dev middleware failed to load, falling back to static files:", viteError);
+      app.use(express.static(distPath));
+      app.get("*", (req, res) => {
+        const indexPath = path.join(distPath, "index.html");
+        if (fs.existsSync(indexPath)) {
+          res.sendFile(indexPath);
+        } else {
+          res.status(200).send("AI Travel Planner is running.");
+        }
+      });
+    }
   } else {
-    const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+      const indexPath = path.join(distPath, "index.html");
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        res.status(200).send("AI Travel Planner is running.");
+      }
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
+  const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
+  });
+
+  server.on("error", (err: any) => {
+    console.error("Server error on port", PORT, ":", err);
   });
 }
 
-startServer();
+startServer().catch((err) => {
+  console.error("Critical failure during startServer:", err);
+});
 
 export default app;
