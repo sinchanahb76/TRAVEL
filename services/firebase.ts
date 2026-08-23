@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import {
   initializeAuth,
   getAuth,
+  // @ts-ignore
   getReactNativePersistence,
   Auth,
 } from 'firebase/auth';
@@ -70,26 +71,9 @@ try {
       auth = getAuth(app);
     }
   } else {
-    // If not yet configured, initialize placeholder app to avoid crash
-    if (getApps().length === 0) {
-      app = initializeApp({
-        apiKey: 'AIzaSyDemoKeyPlaceholderForExpo12345678',
-        authDomain: 'demo-travel-planner.firebaseapp.com',
-        projectId: 'demo-travel-planner',
-        storageBucket: 'demo-travel-planner.appspot.com',
-        messagingSenderId: '1234567890',
-        appId: '1:1234567890:web:abcdef123456',
-      });
-    } else {
-      app = getApp();
-    }
-    try {
-      auth = initializeAuth(app, {
-        persistence: getReactNativePersistence(AsyncStorage),
-      });
-    } catch {
-      auth = getAuth(app);
-    }
+    console.warn(
+      '[Firebase Mobile] Missing Firebase environment variables. Please set EXPO_PUBLIC_FIREBASE_API_KEY, EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN, and EXPO_PUBLIC_FIREBASE_PROJECT_ID.'
+    );
   }
 } catch (error) {
   console.warn('[Firebase Mobile] Initialization note:', error);

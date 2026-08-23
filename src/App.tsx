@@ -187,7 +187,7 @@ function MainApp() {
       departureDate: startDate || new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
       returnDate: endDate,
       tripType: endDate ? 'round-trip' : 'one-way',
-      passengers: activeItinerary?.groupSize || 1,
+      passengers: (activeItinerary as any)?.groupSize || (activeItinerary?.travelers === 'family' ? 4 : 2),
     });
     setActiveTab('flights');
     window.scrollTo({ top: 0, behavior: 'smooth' });

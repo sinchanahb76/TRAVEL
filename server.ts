@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 import {
   handleGenerateItinerary,
   getTripsHandler,
@@ -13,7 +12,7 @@ import {
 } from "./api/_lib/backendLogic.js";
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json({ limit: "10mb" }));
 
@@ -137,9 +136,15 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// Catch-all for undefined API routes to prevent serving HTML for API calls
+app.all("/api/*", (req, res) => {
+  res.status(404).json({ success: false, error: "API endpoint not found" });
+});
+
 // Start Express and Vite middleware
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",

@@ -29,7 +29,7 @@ export default function TabLayout() {
         options={{
           title: 'Plan Trip',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'compass' : 'compass-outline'} size={24} color={color} />
+            <Ionicons name={focused ? 'compass' : 'compass-outline'} size={24} color={color as string} />
           ),
         }}
       />
@@ -38,7 +38,7 @@ export default function TabLayout() {
         options={{
           title: 'Flights',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'airplane' : 'airplane-outline'} size={24} color={color} />
+            <Ionicons name={focused ? 'airplane' : 'airplane-outline'} size={24} color={color as string} />
           ),
         }}
       />
@@ -47,7 +47,7 @@ export default function TabLayout() {
         options={{
           title: 'My Trips',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'briefcase' : 'briefcase-outline'} size={24} color={color} />
+            <Ionicons name={focused ? 'briefcase' : 'briefcase-outline'} size={24} color={color as string} />
           ),
         }}
       />
@@ -56,7 +56,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={color} />
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={color as string} />
           ),
         }}
       />
