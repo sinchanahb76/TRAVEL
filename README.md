@@ -1,7 +1,7 @@
 # ✈️ AI Travel Planner  
 
 An AI-powered travel planning application that creates personalized trip itineraries based on your destination, travel dates, budget, number of travelers, and preferences.
-
+ YDSNKN
 The application uses Google's Gemini AI to generate intelligent travel plans and integrates additional services for weather information and trip storage.
 
 ## 🌐 Live Demo
