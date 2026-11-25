@@ -1,4 +1,4 @@
-# ✈️ AI Travel Planner
+# ✈️ AI Travel Planner  
 
 An AI-powered travel planning application that creates personalized trip itineraries based on your destination, travel dates, budget, number of travelers, and preferences.
 
